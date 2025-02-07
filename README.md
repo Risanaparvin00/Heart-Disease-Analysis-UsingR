@@ -29,3 +29,5 @@ View the thesis document for results: https://github.com/Risanaparvin00/Heart-Di
 
 Clone the repository: git clone <https://github.com/Risanaparvin00/Heart-Disease-Analysis-UsingR/tree/main>
 
+
+(Note that the plots are in .emf file , to view, it must be downloaded)
