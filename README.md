@@ -22,3 +22,6 @@ Key Findings:
 Files:
 Heart Disease Patient Data obtained from Kaggle: https://github.com/Risanaparvin00/Heart-Disease-Analysis-UsingR/blob/main/Heart%20Disease%20Data.xlsx
 R script to replicate the analysis: https://github.com/Risanaparvin00/Heart-Disease-Analysis-UsingR/blob/main/R%20code
+View the thesis document for results: https://github.com/Risanaparvin00/Heart-Disease-Analysis-UsingR/blob/main/Heart_Disease_Analysis_Thesis.docx
+Clone the repository: git clone <https://github.com/Risanaparvin00/Heart-Disease-Analysis-UsingR/tree/main>
+
