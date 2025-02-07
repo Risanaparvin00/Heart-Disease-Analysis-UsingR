@@ -1,0 +1,92 @@
+r=read.csv(file.choose())
+summary(r)
+str(r)
+t.test(chol~target, data=r)
+t.test(age~target, data=r)
+chisq.test(table(r$cp,r$target))
+chisq.test(table(r$sex,r$target))
+#t test fo target and chol pvalue is 0.1366 , hence accept the null hypothesis, which is there is no significant difference in cholesterol levels between people with and without heaart disease.
+# t test for target and age pvalue is 7.061e-05 , creates strong evidence to reject null hypothesis, hence there is significant difference in age between people with heart disease and those without(target=0). 
+# chi square for chest pain and target pvalue is of less tha 2.2e-16, creates strong evidence to reject Ho, hence there is association between chest pain type and likelihood of having heart disease.
+# chi square for sex and target pvalue is  2.667e-06, creates strong evidence to reject Ho, hence there is strong likelihood that the gender of individual can influence their risk of heart disease.
+r$age_category=cut(r$age,breaks=c(20,30,40,50,60,70,80),labels=c("20-30","30-40","40-50","50-60","60-70","70-80"))
+r$age_category
+install.packages("caret")
+library("caret")
+install.packages("rpart")
+install.packages("randomForest")
+library("rpart")
+library("randomForest")
+set.seed(123)
+new=createDataPartition(r$target,p=0.8,list=False)
+new=createDataPartition(r$target,p=0.8,list=FALSE)
+train=r[new,]
+test=r[-new,]
+train
+test
+head(r)
+mlr=glm(target~age+chol+cp+trestbps+thalach+sex, data=train,family=binomial())
+predictmlr=predict(mlr,test,type="response")
+predictmlr
+install.packages("tree")
+library(tree)
+install.packages("party")
+library(party)
+install.packages("C50")
+library(C50)
+#first method for decision tree
+mdt=tree(target~age+chol+cp+trestbps+thalach+sex,data=train)
+predictmdt=predict(mdt,test,type="response")
+plot(mdt)
+text(mdt,pretty=0)
+#second method for decision tree
+mdtparty=ctree(target~age+chol+cp+thalach+exang,data=train)
+plot(mdtparty)
+#third method for decision tree
+train$target=as.factor(train$target)
+mdtC50=C5.0(target~age+chol+cp+trestbps+thalach+sex+exang,data=train)
+summary(mdtC50)
+plot(mdtC50)
+predictmdt=predict(mdtC50,test)
+predictmdt
+confusemat=table(predictmdt,test$target)
+print(confusemat)
+summary(mdtC50)
+plot(mdtC50)
+#118cases classified as 1, 31 misclassified, since cp>2 ... and cp<= 2 says to check age.
+#Next split.. age less than or equal to 56 , then 77 cases as 0, 7 as misclassified. 
+# next split, for age greater than 56, than age less than 59 classified as 1 and 5 misclassified. whereas age above 59, 33 are classsified as 0 and 9 are misclassified.
+#total cases=243.. error=52.. error rate=52/243=21.4%..hence model accuracy=78.6%
+#false positives=36 .. false negative=16
+#Chest pain is the most important preictor(100%) , followed by age(51.44%)
+predictmdt=predict(mdtC50,test)
+predictmdt
+confusemat=table(predictmdt,test$target)
+print(confusemat)
+C5imp(mdtC50)
+mdtC50=C5.0(target~age+chol+cp+thalach+exang,data=train)
+mdtC50
+plot(mdtC50)
+accuracy=sum(diag(confusemat))/sum(confusemat)
+accuracy
+#random forest
+library(randomForest)
+mrf=randomforest(target~age+chol+cp+trestbps+thalach+sex,data=train)
+mrf=randomForest(target~age+chol+cp+trestbps+thalach+sex,data=train)
+plot(mrf)
+predictmrf=predict(mrf,test)
+predictmrf
+importance(mrf)
+varImPlot(mrf)
+varImpPlot(mrf)
+plot(mrf)
+library(e1071)
+msvm=svm(target~age+chol+cp+trestbps+thalach+sex,data=train)
+predictsvm=predict(msvm,test)
+predictsvm
+msvm
+table(predictsvm,r$target)
+tunerf=train(target~age+chol+cp+trestbps+thalach+sex,data=train,method="rf",tunegrid=expand.grid(mtry=c(1,2,3,4)))
+tunerf
+#The best model uses mtry=2(no of predictors randomly selected at each split)
+#accuracy=73.35% indicating moderate performance, kappa value =0.47 indicate a fair to moderate agreement between predicted and actual values.
